@@ -1,0 +1,75 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# vcpkg
+vcpkg_installed/
+.vcpkg-root
+
+# Compiled binaries
+*.exe
+*.out
+*.app
+*.so
+*.dylib
+*.dll
+
+# Compiled Object files
+*.o
+*.obj
+*.lo
+*.slo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Static libraries
+*.a
+*.lib
+*.la
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+# Model files (large binary files)
+models/*.onnx
+models/*.pt
+models/*.pth
+models/*.weights
+models/*.bin
+
+# Test data (videos can be large)
+tests/data/*.mp4
+tests/data/*.avi
+tests/data/*.mov
+tests/data/*.mkv
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.cache

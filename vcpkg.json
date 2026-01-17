@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "license-plate-redactor",
+  "version": "1.0.0",
+  "description": "Video processing application for detecting and redacting license plates",
+  "dependencies": [
+    {
+      "name": "opencv4",
+      "features": ["contrib", "ffmpeg"]
+    },
+    "spdlog",
+    "cli11"
+  ]
+}
