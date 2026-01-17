@@ -1,9 +1,19 @@
-# Placeholder CMake file for CLI application
-# Will be implemented in Phase 7
-
 cmake_minimum_required(VERSION 3.20)
 
-# CLI executable target (placeholder)
-# add_executable(license-plate-redactor main.cpp)
+# CLI executable
+add_executable(license-plate-redactor main.cpp)
 
-# This will be populated with actual implementation in Phase 7
+# Link core library
+target_link_libraries(license-plate-redactor
+    PRIVATE
+        lpr_core
+        ${OpenCV_LIBS}
+)
+
+# Set compile features
+target_compile_features(license-plate-redactor PRIVATE cxx_std_20)
+
+# Installation (optional)
+install(TARGETS license-plate-redactor
+    RUNTIME DESTINATION bin
+)

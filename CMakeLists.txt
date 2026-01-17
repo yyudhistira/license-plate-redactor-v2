@@ -1,4 +1,13 @@
 cmake_minimum_required(VERSION 3.20)
+
+# Set vcpkg toolchain file BEFORE project() call
+if(DEFINED CMAKE_TOOLCHAIN_FILE)
+    message(STATUS "Using toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+elseif(DEFINED ENV{VCPKG_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+    message(STATUS "Using VCPKG_ROOT: $ENV{VCPKG_ROOT}")
+endif()
+
 project(LicensePlateRedactor VERSION 1.0.0 LANGUAGES CXX)
 
 # Set C++ standard
@@ -9,11 +18,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Export compile commands for IDEs
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# vcpkg integration
-if(DEFINED ENV{VCPKG_ROOT})
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "Vcpkg toolchain file")
-endif()
 
 # Include custom CMake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
