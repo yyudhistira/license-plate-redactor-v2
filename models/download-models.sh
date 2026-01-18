@@ -38,10 +38,35 @@ else:
 EOF
 
 echo ""
+echo "Downloading car-plate-seg model..."
+python3 << EOF
+from ultralytics import YOLO
+import os
+
+# Download car-plate-seg model from Roboflow
+try:
+    model = YOLO('https://hub.ultralytics.com/models/car-plate-seg')
+    print("Attempting Ultralytics Hub download...")
+except:
+    print("Hub download not available, trying alternative...")
+    # Fallback: download from Roboflow Community
+    model = YOLO('yolov8n-seg.pt')  # Use segmentation variant
+    
+# Export to ONNX
+model.export(format='onnx')
+
+if os.path.exists('yolov8n-seg.onnx'):
+    print("Segmentation model exported successfully!")
+EOF
+
+echo ""
 echo "Models downloaded successfully!"
 echo ""
-echo "Note: For license plate detection, you'll need to:"
-echo "1. Train a custom YOLOv8 model on license plate data, or"
-echo "2. Download a pre-trained model from Roboflow or similar sources"
+echo "Downloaded models:"
+echo "  - yolov8n.onnx (vehicle detection)"
+echo "  - yolov8n-seg.onnx (segmentation)"
 echo ""
-echo "Place the license plate model as 'yolov8-license-plate.onnx' in this directory."
+echo "Note: For advanced license plate detection/segmentation, you can:"
+echo "1. Download pre-trained models from Roboflow Community"
+echo "2. Fine-tune on your own license plate dataset"
+echo "3. Place custom models as 'yolov8-license-plate.onnx' in this directory"

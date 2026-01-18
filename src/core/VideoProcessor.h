@@ -3,7 +3,6 @@
 #include "FrameBuffer.h"
 #include <opencv2/videoio.hpp>
 #include <string>
-#include <memory>
 #include <functional>
 
 namespace lpr {
@@ -17,7 +16,7 @@ struct ProcessingStats {
     double fps = 0.0;
     double elapsed_seconds = 0.0;
     
-    double progress() const {
+    [[nodiscard]] double progress() const {
         return total_frames > 0 ? static_cast<double>(processed_frames) / total_frames : 0.0;
     }
 };
@@ -53,12 +52,12 @@ public:
     
     ~VideoProcessor() = default;
     
-    // Disable copy, allow move
+    // Disable copy and move (contains FrameBuffer with mutex)
     VideoProcessor(const VideoProcessor&) = delete;
     VideoProcessor& operator=(const VideoProcessor&) = delete;
-    VideoProcessor(VideoProcessor&&) = default;
-    VideoProcessor& operator=(VideoProcessor&&) = default;
-    
+    VideoProcessor(VideoProcessor&&) = delete;
+    VideoProcessor& operator=(VideoProcessor&&) = delete;
+
     /**
      * @brief Open input video file
      * 

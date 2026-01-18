@@ -1,7 +1,6 @@
 #pragma once
 
 #include <opencv2/core.hpp>
-#include <memory>
 #include <queue>
 #include <mutex>
 
@@ -24,12 +23,12 @@ public:
     
     ~FrameBuffer() = default;
     
-    // Disable copy, allow move
+    // Disable copy and move (contains mutex)
     FrameBuffer(const FrameBuffer&) = delete;
     FrameBuffer& operator=(const FrameBuffer&) = delete;
-    FrameBuffer(FrameBuffer&&) = default;
-    FrameBuffer& operator=(FrameBuffer&&) = default;
-    
+    FrameBuffer(FrameBuffer&&) = delete;
+    FrameBuffer& operator=(FrameBuffer&&) = delete;
+
     /**
      * @brief Acquire a frame buffer from the pool
      * 

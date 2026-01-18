@@ -2,7 +2,18 @@ cmake_minimum_required(VERSION 3.20)
 
 # Set vcpkg toolchain file BEFORE project() call
 if(DEFINED CMAKE_TOOLCHAIN_FILE)
-    message(STATUS "Using toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+    message(STATUS "Toolchain file provided: ${CMAKE_TOOLCHAIN_FILE}")
+    # Check if the provided toolchain file exists
+    if(NOT EXISTS "${CMAKE_TOOLCHAIN_FILE}")
+        message(WARNING "Provided toolchain file does not exist: ${CMAKE_TOOLCHAIN_FILE}")
+        # Fall back to VCPKG_ROOT if available
+        if(DEFINED ENV{VCPKG_ROOT})
+            set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+            message(STATUS "Falling back to VCPKG_ROOT toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+        else()
+            message(FATAL_ERROR "Toolchain file not found and VCPKG_ROOT is not set")
+        endif()
+    endif()
 elseif(DEFINED ENV{VCPKG_ROOT})
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
     message(STATUS "Using VCPKG_ROOT: $ENV{VCPKG_ROOT}")

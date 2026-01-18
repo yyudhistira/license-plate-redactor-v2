@@ -30,8 +30,11 @@ Create a local desktop application that processes MP4 video files, detects cars 
 
 ### Object Detection
 - **YOLOv8**: Object detection for vehicles and license plates
-  - Vehicle detection (first stage)
-  - License plate detection (second stage on vehicle ROIs)
+  - **Stage 1 - Vehicle Detection**: Standard object detection to locate vehicles
+  - **Stage 2 - License Plate Segmentation**: Segmentation model (car-plate-seg) to precisely identify license plate regions
+    - Provides pixel-level segmentation masks instead of bounding boxes
+    - Blur only the exact license plate area for maximum unreadability
+    - More accurate than box-based detection for irregular plate shapes
 - **ONNX Runtime** (optional): Optimized model inference
 - **Model Format**: ONNX for cross-platform compatibility
 
@@ -89,14 +92,15 @@ Create a local desktop application that processes MP4 video files, detects cars 
    - Push to detection queue
 
 2. **Detection Thread Pool** (2-4 threads)
-   - Stage 1: Vehicle detection using YOLOv8
-   - Stage 2: License plate detection on vehicle ROIs
+   - Stage 1: Vehicle detection using YOLOv8 (bounding boxes)
+   - Stage 2: License plate segmentation on vehicle ROIs using car-plate-seg model
+   - Generate pixel-level segmentation masks for each license plate
    - Temporal tracking (SORT/DeepSORT) to maintain detection IDs across frames
-   - Produce detection metadata (bounding boxes with tracking IDs)
+   - Produce detection metadata (segmentation masks with tracking IDs)
 
 3. **Redaction Thread**
-   - Apply Gaussian blur to detected regions
-   - Interpolate bounding boxes between frames for smooth transitions
+   - Apply Gaussian blur only to segmented license plate regions (pixel-accurate)
+   - Interpolate segmentation masks between frames for smooth transitions
    - Handle detection appearance/disappearance with fade in/out
    - In-place modification of frame buffer
    - Memory pool for buffer reuse
@@ -199,11 +203,12 @@ license-plate-redactor-v2/
 5. Add memory management with FrameBuffer class
 
 ### Phase 3: Detection Integration
-1. Download and integrate YOLOv8 ONNX models
+1. Download and integrate YOLOv8 ONNX models (vehicle detection + car-plate-seg)
 2. Implement Detector class with OpenCV DNN module
-3. Add vehicle detection capability
-4. Implement license plate detection on vehicle ROIs
-5. Test detection accuracy on sample videos
+3. Add vehicle detection capability (Stage 1)
+4. Implement license plate segmentation on vehicle ROIs (Stage 2 with car-plate-seg)
+5. Extract and process segmentation masks for precise license plate regions
+6. Test detection and segmentation accuracy on sample videos
 
 ### Phase 4: Temporal Tracking
 1. Implement Tracker class with SORT algorithm
@@ -214,11 +219,11 @@ license-plate-redactor-v2/
 
 ### Phase 5: Redaction Logic
 1. Implement Redactor class with Gaussian blur
-2. Apply blur to tracked bounding boxes
-3. Implement bounding box interpolation for missed frames
+2. Apply blur to segmented license plate regions (pixel-level precision)
+3. Implement segmentation mask interpolation for missed frames
 4. Add fade transitions for smooth appearance/disappearance
 5. Handle edge cases (partial plates, overlapping detections)
-6. Test for glitch-free continuous redaction
+6. Test for glitch-free continuous redaction with pixel-accurate blur
 
 ### Phase 6: Multi-Threading Pipeline
 1. Design thread-safe queue system
@@ -318,8 +323,8 @@ license-plate-redactor-v2/
 
 1. **Model Accuracy**
    - Challenge: Handling various plate types, angles, lighting
-   - Solution: Use YOLOv8 with diverse training data
-   - Mitigation: Over-blur ambiguous regions for privacy guarantee
+   - Solution: Use YOLOv8 with car-plate-seg segmentation model for precise plate regions
+   - Mitigation: Blur entire segmented region for complete unreadability
 
 2. **Memory Constraints**
    - Challenge: 4K video at 60fps = ~1.5 GB/sec raw data
